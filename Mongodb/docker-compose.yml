@@ -1,0 +1,29 @@
+version: '3'
+services:
+ mongo:
+  image: mongo
+  container_name: mongo
+  restart: always
+  command: --nojournal
+  networks:
+   - mongo_net
+  ports:
+   - "27017:27017"
+
+ mongo-seed:
+    build: .
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+    volumes:
+      - practica_big_data_2019/:/practica_big_data_2019
+    command:
+      "mongoimport --host mongo --port 27017 -d agile_data_science -c origin_dest_distances --mode upsert --file /practica_big_data_2019/resources/data/origin_dest_distances.jsonl"
+    networks:
+      - mongo_net
+volumes:
+  practica_big_data_2019:
+networks:
+ mongo_net:
